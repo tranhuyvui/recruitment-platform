@@ -2,48 +2,27 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    // 1. Chỉ định chính xác tên bảng có chữ U viết hoa
+    protected $table = 'Users';
+
+    // 2. Chỉ định lại khóa chính (vì Node.js bạn dùng UserID)
+    protected $primaryKey = 'UserID';
+
+    // 3. Tắt timestamps nếu bảng cũ của bạn không có cột created_at và updated_at
+    public $timestamps = false;
+
+    // Điền các cột cho phép bóc tách dữ liệu vào đây (nếu cần)
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'Email',
+        'PasswordHash',
+        'Role',
+        'Status',
     ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
 }
