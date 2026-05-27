@@ -42,6 +42,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'jwt', // Bắt buộc phải là jwt để framework biết đường gọi thư viện Tymon
+            'provider' => 'users',
+        ],
     ],
 
     /*
