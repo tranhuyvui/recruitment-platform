@@ -21,7 +21,6 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        echo "Đang xử lý đăng nhập..."; // Debug log
         try {
             $credentials = $request->validated();
 
