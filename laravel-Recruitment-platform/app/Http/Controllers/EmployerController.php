@@ -143,14 +143,20 @@ class EmployerController extends Controller
     private function errorResponse(\Throwable $e): JsonResponse
     {
         $statusCode = $e->getCode();
-
+    
         if (!is_numeric($statusCode) || $statusCode < 100 || $statusCode > 599) {
             $statusCode = 500;
         }
-
+    
+        $statusCode = (int) $statusCode;
+    
+        $message = $statusCode === 500
+            ? 'Internal Server Error'
+            : $e->getMessage();
+    
         return response()->json([
             'success' => false,
-            'message' => $e->getMessage()
+            'message' => $message
         ], $statusCode);
     }
 }
