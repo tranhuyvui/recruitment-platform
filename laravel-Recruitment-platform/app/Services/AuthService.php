@@ -148,11 +148,11 @@ class AuthService
         $cachedProfile = Redis::get($cacheKey);
 
         if ($cachedProfile) {
-            return json_decode($cachedProfile, true);
+            return json_decode($cachedProfile);
         }
 
         $rawProfile = $this->getProfileFromDb($userId);
-        echo "Cache miss for user profile: {$rawProfile}";
+        // echo "Cache miss for user profile: {$rawProfile}";
 
         if (!$rawProfile) {
             return null;
