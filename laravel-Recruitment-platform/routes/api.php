@@ -14,6 +14,8 @@ Route::post('/users/login', [AuthController::class, 'login']);
 
 require __DIR__ . '/company.php';
 require __DIR__ . '/employer.php';
-Require __DIR__.'/auth.php';
 require __DIR__.'/jobApplication.php';
 require __DIR__.'/savedJob.php';
+require __DIR__.'/auth.php';
+require __DIR__.'/message.php';
+

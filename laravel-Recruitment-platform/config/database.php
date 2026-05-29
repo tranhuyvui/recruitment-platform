@@ -63,7 +63,11 @@ return [
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
+        'mongodb' => [
+            'driver'   => 'mongodb',
+            'dsn'      => env('MONGO_URI'),
+            'database' => env('MONGO_DATABASE'),
+        ],
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
