@@ -18,4 +18,4 @@ require __DIR__.'/jobApplication.php';
 require __DIR__.'/savedJob.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/message.php';
-
+require __DIR__ . '/resume.php';

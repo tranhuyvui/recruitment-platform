@@ -28,6 +28,7 @@ class CompanyController extends Controller
     public function getAllCompany(Request $request): JsonResponse
     {
         try {
+
             // Nếu có user đăng nhập thì lấy role, không có thì mặc định Candidate
             $role = $request->user()->Role ?? 'Candidate';
 
@@ -108,7 +109,9 @@ class CompanyController extends Controller
     {
         try {
             $userID = $request->user()?->UserID;
-
+            if($request->user()?->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền xem công ty của bạn', 403);
+            }
             if (!$userID) {
                 throw new \Exception('Không xác định được người dùng', 401);
             }
@@ -177,6 +180,9 @@ class CompanyController extends Controller
     public function getAllCompanyForAdmin(Request $request): JsonResponse
     {
         try {
+            if($request->user()?->Role !== 'Admin') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $page = (int) $request->query('page', 1);
             $limit = (int) $request->query('limit', 10);
     
@@ -203,8 +209,10 @@ class CompanyController extends Controller
     public function getCompanyByIdForAdmin(int $companyID): JsonResponse
     {
         try {
+            if(request()->user()?->Role !== 'Admin') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $cacheKey = "company:admin:{$companyID}";
-    
             // Nếu Redis chưa chạy thì comment đoạn này lại
             
             $cachedData = Redis::get($cacheKey);
@@ -236,6 +244,9 @@ class CompanyController extends Controller
     public function updateCompanyStatus(int $companyID, CompanyRequest $request): JsonResponse
     {
         try {
+            if(request()->user()?->Role !== 'Admin') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             // 1. Kiểm tra xem request có chứa key 'status' không
             if (!$request->has('status')) {
                 throw new \Exception('Trạng thái công ty không được để trống', 400);
@@ -266,6 +277,9 @@ class CompanyController extends Controller
         try {
             DB::beginTransaction();
             $userID = $request->user()->UserID;
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền tạo công ty', 403);
+            }
 
             $companyData = [
                 'CompanyName' => $request->input('CompanyName'),
@@ -326,6 +340,9 @@ class CompanyController extends Controller
         $uploadedAssets = [];
     
         try {
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền cập nhật công ty', 403);
+            }
             $employerID = $request->user()->UserID;
             $this->companyService->checkEmployer($employerID);
             $companyData = $request->only([
