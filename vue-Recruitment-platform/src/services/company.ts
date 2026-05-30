@@ -21,7 +21,7 @@ export const GetCompanyDetailOfMe = async () => {
     return response.data;
 }
 export const UpdateCompany = async (companyID: number, formData: FormData) => {
-    const response = await api.put(`/company/${companyID}`, formData);
+    const response = await api.post(`/company/${companyID}`, formData);
     return response.data;
 }
 export const getAllCompanyForAdmin = async (page?: number, limit?: number) => {
