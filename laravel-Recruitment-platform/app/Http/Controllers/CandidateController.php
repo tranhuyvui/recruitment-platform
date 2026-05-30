@@ -174,6 +174,10 @@ class CandidateController extends Controller
     public function getCandidatesForEmployer(Request $request)
     {
         try {
+            if ($request->user()->Role !== 'Employer') {
+                throw new Exception("Lỗi phân quyền: Chỉ Nhà tuyển dụng mới được quyền xem danh sách này!", 403);
+            }
+
             $candidates = $this->candidateService->getCandidatesListForEmployer();
             
             return response()->json([
@@ -189,7 +193,10 @@ class CandidateController extends Controller
     public function getCandidateDetailForEmployer(CandidateRequest $request)
     {
         try {
-            // Lấy id từ params do FormRequest đã merge
+            if ($request->user()->Role !== 'Employer') {
+                throw new Exception("Lỗi phân quyền: Chỉ Nhà tuyển dụng mới được xem chi tiết ứng viên!", 403);
+            }
+
             $candidateId = (int) $request->input('id'); 
 
             $profile = $this->candidateService->getCandidateProfile($candidateId);
@@ -198,8 +205,6 @@ class CandidateController extends Controller
             }
 
             $skills = $this->candidateService->getCandidateSkills($candidateId);
-            
-            // Tạm dùng DB thay vì gọi ResumeService như Express, nếu bạn có ResumeService thì đổi lại nhé
             $resumes = DB::table('Resumes')->where('CandidateID', $candidateId)->get();
 
             return response()->json([
@@ -219,6 +224,10 @@ class CandidateController extends Controller
     public function getAllCandidates(Request $request)
     {
         try {
+            if ($request->user()->Role !== 'Admin') {
+                throw new Exception("Lỗi phân quyền: Chỉ Admin mới được quyền truy cập toàn bộ dữ liệu!", 403);
+            }
+
             $page = (int) $request->query('page', 1);
             $limit = (int) $request->query('limit', 10);
             
