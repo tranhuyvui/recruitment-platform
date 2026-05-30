@@ -168,7 +168,7 @@ class CompanyService
     
         return $company->toArray();
     }
-    public function updateCompanyStatusForAdmin(int $companyID, string $status): bool
+    public function updateCompanyStatusForAdmin(int $companyID, bool $status): bool
     {
         $affectedRows = CompanyModel::query()
             ->where('CompanyID', $companyID)

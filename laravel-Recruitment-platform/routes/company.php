@@ -13,7 +13,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/company/{companyID}/request', [CompanyController::class, 'requestCompany'])
         ->name('companies.request');
     // PUT /api/company/{companyID}
-    Route::put('/company/{companyID}', [CompanyController::class, 'updateCompany'])
+    Route::post('/company/{companyID}', [CompanyController::class, 'updateCompany'])
         ->name('companies.update');
 
     // GET /api/company/Detail/ofme

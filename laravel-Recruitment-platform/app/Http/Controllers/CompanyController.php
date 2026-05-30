@@ -28,27 +28,28 @@ class CompanyController extends Controller
     public function getAllCompany(Request $request): JsonResponse
     {
         try {
+
             // Nếu có user đăng nhập thì lấy role, không có thì mặc định Candidate
             $role = $request->user()->Role ?? 'Candidate';
 
-            // $cacheKey = "company:role:{$role}:all";
+            $cacheKey = "company:role:{$role}:all";
 
             // Lấy dữ liệu từ Redis cache
-            // $cachedData = Redis::get($cacheKey);
+            $cachedData = Redis::get($cacheKey);
 
-            // if ($cachedData) {
-            //     return response()->json([
-            //         'success' => true,
-            //         'message' => 'Lấy danh sách công ty thành công (từ cache)',
-            //         'data' => json_decode($cachedData, true)
-            //     ], 200);
-            // }
+            if ($cachedData) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Lấy danh sách công ty thành công (từ cache)',
+                    'data' => json_decode($cachedData, true)
+                ], 200);
+            }
 
             // Gọi Service xử lý
             $companies = $this->companyService->getAllCompany($role);
 
             // Lưu cache 300 giây
-            // Redis::setex($cacheKey, 300, json_encode($companies));
+            Redis::setex($cacheKey, 300, json_encode($companies));
 
             return response()->json([
                 'success' => true,
@@ -68,7 +69,7 @@ class CompanyController extends Controller
         try {
             $role = $request->user()?->Role ?? 'Candidate';
 
-            // $cacheKey = "company:role:{$role}:{$companyID}";
+            $cacheKey = "company:role:{$role}:{$companyID}";
 
             if ($role === 'Employer') {
                 $employerID = $request->user()?->UserID;
@@ -80,19 +81,19 @@ class CompanyController extends Controller
                 $this->companyService->checkEmployer($employerID);
             }
 
-            // $cachedData = Redis::get($cacheKey);
+            $cachedData = Redis::get($cacheKey);
 
-            // if ($cachedData) {
-            //     return response()->json([
-            //         'success' => true,
-            //         'message' => 'Lấy thông tin công ty thành công (từ cache)',
-            //         'data' => json_decode($cachedData, true)
-            //     ], 200);
-            // }
+            if ($cachedData) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Lấy thông tin công ty thành công (từ cache)',
+                    'data' => json_decode($cachedData, true)
+                ], 200);
+            }
 
             $company = $this->companyService->getCompanyDetail($role, $companyID);
 
-            // Redis::setex($cacheKey, 300, json_encode($company));
+            Redis::setex($cacheKey, 300, json_encode($company));
 
             return response()->json([
                 'success' => true,
@@ -108,7 +109,9 @@ class CompanyController extends Controller
     {
         try {
             $userID = $request->user()?->UserID;
-
+            if($request->user()?->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền xem công ty của bạn', 403);
+            }
             if (!$userID) {
                 throw new \Exception('Không xác định được người dùng', 401);
             }
@@ -145,10 +148,10 @@ class CompanyController extends Controller
             $role = $request->user()?->Role ?? 'Candidate';
 
 
-            // $cacheKey = "company-ofme:role:{$role}:{$companyID}";
+            $cacheKey = "company-ofme:role:{$role}:{$companyID}";
 
             // Nếu Redis chưa chạy thì tạm comment đoạn Redis này
-            /*
+            
             $cachedData = Redis::get($cacheKey);
 
             if ($cachedData) {
@@ -158,13 +161,11 @@ class CompanyController extends Controller
                     'data' => json_decode($cachedData, true)
                 ], 200);
             }
-            */
+            
 
             $company = $this->companyService->getCompanyDetail($role, $companyID);
 
-            /*
             Redis::setex($cacheKey, 300, json_encode($company));
-            */
 
             return response()->json([
                 'success' => true,
@@ -179,6 +180,9 @@ class CompanyController extends Controller
     public function getAllCompanyForAdmin(Request $request): JsonResponse
     {
         try {
+            if($request->user()?->Role !== 'Admin') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $page = (int) $request->query('page', 1);
             $limit = (int) $request->query('limit', 10);
     
@@ -205,10 +209,12 @@ class CompanyController extends Controller
     public function getCompanyByIdForAdmin(int $companyID): JsonResponse
     {
         try {
-            // $cacheKey = "company:admin:{$companyID}";
-    
+            if(request()->user()?->Role !== 'Admin') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
+            $cacheKey = "company:admin:{$companyID}";
             // Nếu Redis chưa chạy thì comment đoạn này lại
-            /*
+            
             $cachedData = Redis::get($cacheKey);
     
             if ($cachedData) {
@@ -218,13 +224,11 @@ class CompanyController extends Controller
                     'data' => json_decode($cachedData, true)
                 ], 200);
             }
-            */
+            
     
             $company = $this->companyService->getCompanyDetailForAdmin($companyID);
     
-            /*
             Redis::setex($cacheKey, 300, json_encode($company));
-            */
     
             return response()->json([
                 'success' => true,
@@ -240,20 +244,22 @@ class CompanyController extends Controller
     public function updateCompanyStatus(int $companyID, CompanyRequest $request): JsonResponse
     {
         try {
-            $status = $request->input('status');
-    
-            if ($status === null) {
+            if(request()->user()?->Role !== 'Admin') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
+            // 1. Kiểm tra xem request có chứa key 'status' không
+            if (!$request->has('status')) {
                 throw new \Exception('Trạng thái công ty không được để trống', 400);
             }
     
+            // 2. Ép kiểu an toàn về boolean (nhận cả chuỗi 'true'/'false' hoặc 1/0)
+            $status = $request->boolean('status');
+    
+            // 3. Truyền biến boolean vào Service
             $this->companyService->updateCompanyStatusForAdmin($companyID, $status);
     
-            // $cacheKey = "company:admin:{$companyID}";
-    
-            // Nếu Redis chưa chạy thì comment dòng này lại
-            /*
+            $cacheKey = "company:admin:{$companyID}";
             Redis::del($cacheKey);
-            */
     
             return response()->json([
                 'success' => true,
@@ -271,6 +277,9 @@ class CompanyController extends Controller
         try {
             DB::beginTransaction();
             $userID = $request->user()->UserID;
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền tạo công ty', 403);
+            }
 
             $companyData = [
                 'CompanyName' => $request->input('CompanyName'),
@@ -305,9 +314,7 @@ class CompanyController extends Controller
 
             DB::commit();
 
-            /*
             Redis::del('company:role:Candidate:all');
-            */
 
             return response()->json([
                 'success' => true,
@@ -328,24 +335,14 @@ class CompanyController extends Controller
             return $this->errorResponse($e);
         }
     }
-    private function errorResponse(\Throwable $e): JsonResponse
-    {
-        $statusCode = $e->getCode();
-
-        if (!is_numeric($statusCode) || $statusCode < 100 || $statusCode > 599) {
-            $statusCode = 500;
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], $statusCode);
-    }
     public function updateCompany(CompanyRequest $request, int $companyID): JsonResponse
     {
         $uploadedAssets = [];
     
         try {
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền cập nhật công ty', 403);
+            }
             $employerID = $request->user()->UserID;
             $this->companyService->checkEmployer($employerID);
             $companyData = $request->only([
@@ -371,14 +368,14 @@ class CompanyController extends Controller
     
             $this->companyService->updateCompany($companyID, $companyData);
     
-            /*
+            
             // Nếu dùng Redis thì bật lại
             $role = 'Employer';
     
             Redis::del("company:role:{$role}:{$companyID}");
             Redis::del("company:role:{$role}:all");
             Redis::del("company-ofme:role:{$role}:{$companyID}");
-            */
+        
     
             return response()->json([
                 'success' => true,
@@ -426,5 +423,24 @@ class CompanyController extends Controller
         } catch (\Throwable $e) {
             return $this->errorResponse($e);
         }
+    }
+    private function errorResponse(\Throwable $e): JsonResponse
+    {
+        $statusCode = $e->getCode();
+    
+        if (!is_numeric($statusCode) || $statusCode < 100 || $statusCode > 599) {
+            $statusCode = 500;
+        }
+    
+        $statusCode = (int) $statusCode;
+    
+        $message = $statusCode === 500
+            ? 'Internal Server Error'
+            : $e->getMessage();
+    
+        return response()->json([
+            'success' => false,
+            'message' => $message
+        ], $statusCode);
     }
 }
