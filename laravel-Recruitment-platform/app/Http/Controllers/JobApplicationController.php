@@ -140,9 +140,7 @@ class JobApplicationController extends Controller
                 $limit
             );
     
-            /*
             Redis::setex($cacheKey, 60 * 5, json_encode($data));
-            */
     
             return response()->json([
                 'success' => true,
@@ -236,7 +234,6 @@ class JobApplicationController extends Controller
             }
     
             
-            // Nếu Redis chạy thì mở lại
             // $jobID = $this->jobApplicationService->getJobIdByApplicationId($ApplicationID);
     
             $keys = Redis::connection()->keys('application:job:*');

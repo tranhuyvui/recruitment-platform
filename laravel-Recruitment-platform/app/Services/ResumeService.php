@@ -6,9 +6,11 @@ use App\Models\ResumeModel;
 use App\Models\ResumeDetailMongoModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Services\CandidateService;
 
 class ResumeService
 {
+    protected CandidateService $candidateService;
     public function buildManualResume(int $candidateId, array $resumeData, array $candidate): array
     {
         $newResumeId = null;
@@ -17,13 +19,7 @@ class ResumeService
         DB::beginTransaction();
 
         try {
-            /*
-                PHẦN LIÊN QUAN BẢNG CANDIDATES
-                Tạm comment lại vì bạn của bạn làm bảng Candidates.
-
-                $this->upsertCandidateProfile($candidate);
-            */
-
+            $this->candidateService->upsertCandidateProfile($candidate);
             $resume = ResumeModel::query()->create([
                 'CandidateID' => $candidateId,
                 'Title' => $resumeData['title'] ?? 'CV Chưa Đặt Tên',
@@ -50,14 +46,9 @@ class ResumeService
 
             $mongoCreated = true;
 
-            /*
-                PHẦN LIÊN QUAN CandidateSkills / Skills
-                Tạm comment lại vì liên quan profile kỹ năng candidate.
-
-                if (!empty($resumeData['skills']) && is_array($resumeData['skills'])) {
-                    $this->appendSkillsFromResume($candidateId, $resumeData['skills']);
-                }
-            */
+            if (!empty($resumeData['skills']) && is_array($resumeData['skills'])) {
+                $this->candidateService->appendSkillsFromResume($candidateId, $resumeData['skills']);
+            }
 
             DB::commit();
 
@@ -112,6 +103,22 @@ class ResumeService
         $resumeExists = ResumeModel::query()
             ->where('ResumeID', $resumeId)
             ->where('CandidateID', $candidateId)
+            ->exists();
+    
+        if (!$resumeExists) {
+            throw new \Exception('Cv không tồn tại', 404);
+        }
+    
+        $detail = ResumeDetailMongoModel::query()
+            ->where('resumeId', $resumeId)
+            ->first();
+    
+        return $detail ? $detail->toArray() : null;
+    }
+    public function getResumeDetailByResumeID(int $resumeId): ?array
+    {
+        $resumeExists = ResumeModel::query()
+            ->where('ResumeID', $resumeId)
             ->exists();
     
         if (!$resumeExists) {
@@ -191,16 +198,11 @@ class ResumeService
                     'projects' => $this->normalizeArrayField($resumeData['projects'] ?? []),
                 ]);
     
-            /*
-                TẠM COMMENT THEO YÊU CẦU CỦA BẠN.
-                Sau này có phần CandidateSkills thì mở lại.
-    
-                $skills = $this->normalizeArrayField($resumeData['skills'] ?? []);
-    
-                if (!empty($skills)) {
-                    $this->updateCandidateSkills($candidateId, $skills);
-                }
-            */
+            $skills = $this->normalizeArrayField($resumeData['skills'] ?? []);
+
+            if (!empty($skills)) {
+                $this->candidateService->updateCandidateSkills($candidateId, $skills);
+            }
     
             DB::commit();
     

@@ -4,8 +4,11 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Services\ResumeService;
+
 class JobApplicationService
 {
+    protected ResumeService $resumeService;
     public function getApplicationByJobId(int $jobID, int $page, int $limit): array
     {
         $offset = ($page - 1) * $limit;
@@ -72,7 +75,7 @@ class JobApplicationService
             'MatchScore' => $app->MatchScore,
             'AI_Summary_Review' => $app->AI_Summary_Review,
             'ResumeID' => $app->ResumeID,
-            'ResumeDetail' => $this->getResumeDetailByResumeID($app->ResumeID),
+            'ResumeDetail' => $this->resumeService->getResumeDetailByResumeID((int) $app->ResumeID),
 
             'JobTitle' => $app->JobTitle,
             'CompanyName' => $app->CompanyName,
@@ -253,7 +256,7 @@ class JobApplicationService
             throw new \Exception("Job {$jobID} not found");
         }
     
-        $cv = $this->getResumeDetailByResumeID($resumeID);
+        $cv = $this->resumeService->getResumeDetailByResumeID($resumeID);
     
         if (!$cv) {
             throw new \Exception("CV not found for resume {$resumeID}");
@@ -649,64 +652,7 @@ class JobApplicationService
             'Quantity' => 3,
         ];
     }
-    private function getResumeDetailByResumeID(int $resumeID): ?array
-    {
-        // Mock tạm để test AI
-        return [
-            'resumeId' => $resumeID,
-            'templateId' => 1,
-            'title' => 'Lập trình viên Backend (Node.js)',
-            'summary' => '',
-            'AvatarUrl' => 'https://res.cloudinary.com/duxdpc100/image/upload/v1778389556/JobPortal/Candidates/l1zscfol6zrvfew5fyqv.png',
     
-            'skills' => [],
-    
-            'experience' => [
-                [
-                    'companyName' => 'Tập đoàn Công nghệ ABC',
-                    'position' => 'Thực tập sinh Web',
-                    'startDate' => '2021-05-06',
-                    'endDate' => '2022-05-13',
-                    'isCurrent' => false,
-                    'description' => 'Hỗ trợ xây dựng giao diện Vue.js và viết tài liệu kỹ thuật.',
-                ],
-                [
-                    'companyName' => 'Công ty TNHH Giải pháp Phần mềm',
-                    'position' => 'Lập trình viên Backend',
-                    'startDate' => '2023-05-01',
-                    'endDate' => '2024-05-18',
-                    'isCurrent' => false,
-                    'description' => 'Phát triển hệ thống API, tối ưu hóa database và tích hợp các dịch vụ bên thứ 3.',
-                ],
-            ],
-    
-            'education' => [
-                [
-                    'institution' => 'Đại học sư phạm thành phố Hồ Chí Minh',
-                    'degree' => 'Cử nhân',
-                    'major' => 'Công nghệ thông tin',
-                    'startDate' => '2023-02-10',
-                    'endDate' => '2027-02-10',
-                    'gpa' => '3.5',
-                ],
-            ],
-    
-            'projects' => [
-                [
-                    'projectName' => 'Hệ thống Job Portal',
-                    'role' => 'Backend Developer',
-                    'technologies' => [
-                        'Node.js',
-                        'Express',
-                        'MongoDB',
-                        'Vue.js',
-                    ],
-                    'link' => 'https://jobportal-rs7w.onrender.com',
-                    'description' => 'Xây dựng hệ thống API cho nền tảng tuyển dụng, tích hợp tính năng tìm kiếm và matching CV.',
-                ],
-            ],
-        ];
-    }
 /////////////////////////////////////////////
     
 }

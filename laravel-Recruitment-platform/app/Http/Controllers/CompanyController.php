@@ -213,8 +213,7 @@ class CompanyController extends Controller
                 throw new \Exception('Bạn không có quyền truy cập', 403);
             }
             $cacheKey = "company:admin:{$companyID}";
-            // Nếu Redis chưa chạy thì comment đoạn này lại
-            
+
             $cachedData = Redis::get($cacheKey);
     
             if ($cachedData) {
@@ -367,9 +366,6 @@ class CompanyController extends Controller
             }
     
             $this->companyService->updateCompany($companyID, $companyData);
-    
-            
-            // Nếu dùng Redis thì bật lại
             $role = 'Employer';
     
             Redis::del("company:role:{$role}:{$companyID}");
