@@ -8,7 +8,7 @@ class ResumeDetailMongoModel extends Model
 {
     protected $connection = 'mongodb';
 
-    protected $collection = 'resumedetails';
+    protected $table = 'resumedetails';
 
     protected $fillable = [
         'resumeId',

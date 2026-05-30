@@ -26,8 +26,7 @@ Route::middleware('auth:api')->group(function () {
         ->name('resume.employer-detail');
 
     // GET /api/resumes/detail/{resumeId}
-    Route::get('/resumes/detail/{resumeId}', [ResumeController::class, 'getResumeDetail'])
-        ->name('resume.detail');
+    Route::get('/resumes/detail/{resumeId}', [ResumeController::class, 'getResumeDetail']);
 
     // PUT /api/resumes/{resumeId}
     Route::put('/resumes/{resumeId}', [ResumeController::class, 'updateManualResume'])
