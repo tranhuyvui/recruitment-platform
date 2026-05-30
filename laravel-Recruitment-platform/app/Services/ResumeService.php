@@ -11,6 +11,10 @@ use App\Services\CandidateService;
 class ResumeService
 {
     protected CandidateService $candidateService;
+    public function __construct(CandidateService $candidateService)
+    {
+        $this->candidateService = $candidateService;
+    }
     public function buildManualResume(int $candidateId, array $resumeData, array $candidate): array
     {
         $newResumeId = null;
@@ -108,11 +112,9 @@ class ResumeService
         if (!$resumeExists) {
             throw new \Exception('Cv không tồn tại', 404);
         }
-    
         $detail = ResumeDetailMongoModel::query()
             ->where('resumeId', $resumeId)
             ->first();
-    
         return $detail ? $detail->toArray() : null;
     }
     public function getResumeDetailByResumeID(int $resumeId): ?array

@@ -166,8 +166,8 @@ class ResumeController extends Controller
     
             $candidateId = $request->user()->UserID;
             $resumeID = (int) $resumeId;
-    
             $detail = $this->resumeService->getResumeDetail($resumeID, $candidateId);
+            
     
             if (!$detail) {
                 throw new \Exception('Không tìm thấy CV này hoặc bạn không có quyền xem!', 404);
