@@ -20,6 +20,9 @@ class JobApplicationController extends Controller
     public function getListApplicationByJobId(JobApplicationRequest $request, int $JobID): JsonResponse
     {
         try {
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $page = (int) $request->query('page', 1);
             $limit = (int) $request->query('limit', 10);
 
@@ -154,6 +157,9 @@ class JobApplicationController extends Controller
     public function getChartStatsController(Request $request): JsonResponse
     {
         try {
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $userID = $request->user()->UserID;
             
             $type = $request->query('type', 'week');

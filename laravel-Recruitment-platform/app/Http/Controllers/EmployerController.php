@@ -19,6 +19,9 @@ class EmployerController extends Controller
 
     {
         try {
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $userID = $request->user()->UserID;
 
             $approvalStatus = $request->input('ApprovalStatus');
@@ -46,6 +49,9 @@ class EmployerController extends Controller
     public function getPendingEmployers(Request $request): JsonResponse
     {
         try {
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $userID = $request->user()->UserID;
 
             $status = $request->query('status', 'all');
@@ -66,6 +72,9 @@ class EmployerController extends Controller
     public function getDashboardStats(Request $request): JsonResponse
     {
         try {
+            if($request->user()->Role !== 'Employer') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $userID = $request->user()->UserID;
 
             $stats = $this->employerService->getDashboardStats($userID);
@@ -81,9 +90,12 @@ class EmployerController extends Controller
         }
     }
 
-    public function getTopEmployers(): JsonResponse
+    public function getTopEmployers(Request $request): JsonResponse
     {
         try {
+            if($request->user()->Role !== 'Admin') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $employers = $this->employerService->getTopEmployers();
 
             return response()->json([
@@ -116,6 +128,9 @@ class EmployerController extends Controller
     public function getAllEmployers(Request $request): JsonResponse
     {
         try {
+            if($request->user()->Role !== 'Admin') {
+                throw new \Exception('Bạn không có quyền truy cập', 403);
+            }
             $page = (int) $request->query('page', 1);
             $limit = (int) $request->query('limit', 10);
 
