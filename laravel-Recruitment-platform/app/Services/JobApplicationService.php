@@ -174,26 +174,69 @@ class JobApplicationService
     }
     public function createJobApplication(int $jobID, int $candidateID, int $resumeID): int
     {
+        try {
+            $this->checkJob($jobID);
+    
+            $this->checkResume($resumeID, $candidateID);
+    
+            $this->checkConflict($jobID, $candidateID);
+    
+            $applicationID = DB::table('JobApplications')->insertGetId([
+                'JobID' => $jobID,
+                'CandidateID' => $candidateID,
+                'ResumeID' => $resumeID,
+                'Status' => 'Pending',
+                'MatchScore' => 0,
+                'AI_Summary_Review' => null,
+                'CreatedAt' => now(),
+            ]);
+    
+            return (int) $applicationID;
+    
+        } catch (\Throwable $e) {
+            throw $e;
+        }
+    }
+    private function checkConflict(int $jobID, int $candidateID): void
+    {
         $exists = DB::table('JobApplications')
             ->where('JobID', $jobID)
             ->where('CandidateID', $candidateID)
             ->exists();
-    
+
         if ($exists) {
             throw new \Exception('Bạn đã ứng tuyển công việc này rồi', 409);
         }
+    }
+    private function checkResume(int $resumeID, int $candidateID): void
+    {
+        $exists = DB::table('Resumes')
+            ->where('ResumeID', $resumeID)
+            ->where('CandidateID', $candidateID)
+            ->exists();
     
-        $applicationID = DB::table('JobApplications')->insertGetId([
-            'JobID' => $jobID,
-            'CandidateID' => $candidateID,
-            'ResumeID' => $resumeID,
-            'Status' => 'Pending',
-            'MatchScore' => 0,
-            'AI_Summary_Review' => null,
-            'CreatedAt' => now(),
-        ]);
+        if (!$exists) {
+            throw new \Exception('CV không tồn tại hoặc không thuộc về bạn', 400);
+        }
+    }
+    private function checkJob(int $jobID): void
+    {
+        $job = DB::table('Jobs')
+            ->select([
+                'JobID',
+                'Quantity',
+                'ExpiredDate',
+            ])
+            ->where('JobID', $jobID)
+            ->first();
     
-        return (int) $applicationID;
+        if (!$job) {
+            throw new \Exception('Công việc không tồn tại', 404);
+        }
+    
+        if ($job->ExpiredDate && date('Y-m-d', strtotime($job->ExpiredDate)) < now()->toDateString()) {
+            throw new \Exception('Công việc đã hết hạn ứng tuyển', 400);
+        }
     }
     public function updateApplicationStatusCandidate(int $applicationID, int $candidateID, string $status): void
     {

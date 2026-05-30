@@ -189,16 +189,20 @@ class JobApplicationController extends Controller
                 $resumeID
             );
     
-            try {
-                $this->jobApplicationService->analyzeApplicationWithAI(
-                    $applicationID,
-                    $jobID,
-                    $resumeID
-                );
-            } catch (\Throwable $aiError) {
-                // Bỏ qua lỗi AI để người dùng vẫn ứng tuyển thành công
-            }
-    
+             // Chạy AI sau khi response đã trả về cho người dùng
+            dispatch(function () use ($applicationID, $jobID, $resumeID) {
+                try {
+                    app(\App\Services\JobApplicationService::class)->analyzeApplicationWithAI(
+                        $applicationID,
+                        $jobID,
+                        $resumeID
+                    );
+                } catch (\Throwable $aiError) {
+
+                    // Bỏ qua lỗi AI
+                }
+            })->afterResponse();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Ứng tuyển thành công',
