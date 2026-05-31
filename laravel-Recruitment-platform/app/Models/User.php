@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -33,5 +34,12 @@ class User extends Authenticatable implements JWTSubject
             'userId' => $this->UserID,
             'role' => $this->Role
         ];
+    }
+    public static function find($id, $columns = ['*'])
+    {
+        logger("User::find called with id: {$id}");
+        return Cache::remember("jwt_user:{$id}", 300, function () use ($id, $columns) {
+            return parent::find($id, $columns);
+        });
     }
 }

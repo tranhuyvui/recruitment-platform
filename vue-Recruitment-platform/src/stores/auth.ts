@@ -2,8 +2,9 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import type { IProfile } from '../types/user';
 import { getCurrentRole, getProfile, login, register, registerSendOtp, updateStatus, verifyOtp, changePassword, deleteAccount, requestOtpAuth, requestOtpForgotPassword, forgotPassword } from '../services/auth';
+// import { useMessageStore } from './message';
+import { setupEcho, disconnectEcho } from '../services/echo';
 import { useMessageStore } from './message';
-import { connectSocket, disconnectSocket } from '../services/socket';
 
 export const useAuthStore = defineStore('auth', () => {
     const loading = ref<boolean>(false);
@@ -85,12 +86,18 @@ export const useAuthStore = defineStore('auth', () => {
             isLogin.value = true;
             message.value = data.message || 'Đăng nhập thành công';
 
-            const token = localStorage.getItem('accessToken');
-            if (token) {
-                connectSocket(token);
-                const messageStore = useMessageStore();
-                messageStore.initSocketListeners();
-            }
+            // const token = data.data.accessToken;
+            // console.log("Token sau khi đăng nhập:", token);
+            // if (token) {
+        
+            //     setupEcho(token);
+            //     const myUserId = data.data.userId;
+            //     const messageStore = useMessageStore();
+            //     if (myUserId) {
+            //         console.log("Khởi tạo Echo listeners với user ID:", myUserId);
+            //         messageStore.initEchoListeners(myUserId);
+            //     }
+            // }
             localStorage.setItem("accessToken", data.data.accessToken);
             localStorage.setItem("refreshToken", data.data.refreshToken);
             localStorage.setItem("role", data.data.role);
@@ -113,9 +120,13 @@ export const useAuthStore = defineStore('auth', () => {
             user.value = data.data;
             const token = localStorage.getItem('accessToken');
             if (token) {
-                connectSocket(token);
+                setupEcho(token);
+                const myUserId = user.value?.ProfileID;
                 const messageStore = useMessageStore();
-                messageStore.initSocketListeners();
+                if (myUserId) {
+                    console.log("Khởi tạo Echo listeners với user ID:", myUserId);
+                    messageStore.initEchoListeners(myUserId);
+                }
             }
         } catch (err: any) {
             error.value = true;
@@ -134,7 +145,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('role');
-        disconnectSocket();
+        disconnectEcho();
         window.location.href = '/login-section';
     };
     const updateStatusStore = async (userId: number, status: string) => {

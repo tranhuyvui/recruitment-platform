@@ -29,17 +29,13 @@ class ChatController extends Controller
                 'receiver_id' => 'required|integer',
                 'content' => 'required|string',
             ]);
-
             $user = $request->user();
 
-            // Giả lập lấy thông tin profile (Giống getProfileWithCache của bạn)
-            // Bạn có thể gọi Service lấy Profile ở đây
             $sender = $this->authService->getProfile($user->UserID);
             $receiver = $this->authService->getProfile($data['receiver_id']);
 
-            // 1. Lưu vào MongoDB
             $messageData = MessageModel::create([
-                'sender_id' => $user->UserID, // Hoặc $user->id tùy thiết kế database
+                'sender_id' => $user->UserID,
                 'receiver_id' => $data['receiver_id'],
                 'sender_role' => $user->Role,
                 'content' => $data['content'],
@@ -53,13 +49,11 @@ class ChatController extends Controller
             // 2. Bắn sự kiện tới Reverb (Tương đương io.to().emit)
             broadcast(new MessageSent($messageData, $data['receiver_id']));
 
-            // 3. Trả về kết quả cho người gửi (Tương đương socket.emit('message_sent_success'))
             return response()->json([
                 'success' => true,
                 'data' => $messageData
             ], 200);
         } catch (Exception $e) {
-            echo "Error sending message: " . $e->getMessage();
             return response()->json(['success' => false, 'message' => 'Lỗi server, không thể gửi tin nhắn'], 500);
         }
     }

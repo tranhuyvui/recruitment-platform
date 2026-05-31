@@ -6,11 +6,11 @@ use MongoDB\Laravel\Eloquent\Model;
 
 class MessageModel extends Model
 {
-    // 1. Chỉ định kết nối tới MongoDB (Vì mặc định hệ thống đang là MySQL)
     protected $connection = 'mongodb';
 
     // 2. Tên Collection (Tương đương tên bảng)
     protected $collection = 'messages';
+    protected $table = 'messages';
 
     // 3. Khai báo các cột ĐƯỢC PHÉP insert dữ liệu (Bảo mật Mass Assignment)
     protected $fillable = [

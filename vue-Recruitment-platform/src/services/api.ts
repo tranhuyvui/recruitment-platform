@@ -1,5 +1,5 @@
 import axios from "axios";
-import { disconnectSocket } from "./socket";
+import { disconnectEcho } from "./echo";
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || 'https://jobportal-rs7w.onrender.com/api',
 });
@@ -55,7 +55,7 @@ const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     window.location.href = '/login';
-    disconnectSocket();
+    disconnectEcho();
 };
 
 export default api;

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import SidebarEmployer from '../../components/Employer/SidebarEmployer.vue';
 import { ref, computed, onMounted, nextTick, watch } from 'vue';
-import { Search, Send, Image as ImageIcon, Smile, Phone, Video, MessageSquareDashed } from 'lucide-vue-next';
+// Đã thêm Loader2 vào import
+import { Search, Send, Image as ImageIcon, Smile, Phone, Video, MessageSquareDashed, Loader2 } from 'lucide-vue-next';
 import { useMessageStore } from '../../stores/message';
 import { useAuthStore } from '../../stores/auth';
 import { timeAgo } from '../../utils/format';
@@ -97,7 +98,12 @@ const backToList = () => {
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto custom-scrollbar">
+            <div class="flex-1 overflow-y-auto custom-scrollbar relative">
+                
+                <div v-if="messageStore.loading && messageStore.conversations.length === 0" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+                    <Loader2 class="w-8 h-8 text-[#3B5BFA] animate-spin" />
+                </div>
+
                 <div v-if="filteredChats.length > 0">
                     <button
                         v-for="chat in filteredChats"
@@ -131,7 +137,7 @@ const backToList = () => {
                     </button>
                 </div>
 
-                <div v-else class="py-16 text-center">
+                <div v-else-if="!messageStore.loading" class="py-16 text-center">
                     <div class="w-12 h-12 rounded-full bg-slate-100 mx-auto flex items-center justify-center mb-3">
                         <Search class="w-5 h-5 text-slate-300" />
                     </div>
@@ -196,45 +202,54 @@ const backToList = () => {
                             </button>
                         </div>
                     </div>
+                    
                     <div
                         ref="messagesContainer"
-                        class="flex-1 overflow-y-auto px-3 sm:px-5 lg:px-6 py-5 space-y-4 custom-scrollbar"
+                        class="flex-1 overflow-y-auto px-3 sm:px-5 lg:px-6 py-5 custom-scrollbar relative"
                         style="background: radial-gradient(ellipse at top left, #eef2ff 0%, #f0f2f8 60%);"
                     >
-                        <div
-                            v-for="(msg, index) in messageStore.chatHistory"
-                            :key="msg._id"
-                            class="flex items-end gap-2.5"
-                            :class="msg.sender_id === authStore.user?.ProfileID ? 'justify-end' : 'justify-start'"
-                        >
-                            <img
-                                v-if="msg.sender_id !== authStore.user?.ProfileID"
-                                :src="msg.sender_avatar || activeChat.avatar"
-                                class="w-7 h-7 rounded-full object-cover shrink-0 shadow"
-                            />
+                        <div v-if="messageStore.loading" class="absolute inset-0 flex items-center justify-center bg-white/60 z-10 rounded-lg">
+                            <Loader2 class="w-8 h-8 text-[#3B5BFA] animate-spin" />
+                        </div>
 
-                            <div class="flex flex-col max-w-[85%] sm:max-w-[75%] lg:max-w-[65%]"
-                                :class="msg.sender_id === authStore.user?.ProfileID ? 'items-end' : 'items-start'"
+                        <div class="space-y-4">
+                            <div
+                                v-for="(msg, index) in messageStore.chatHistory"
+                                :key="msg._id"
+                                class="flex items-end gap-2.5"
+                                :class="msg.sender_id === authStore.user?.ProfileID ? 'justify-end' : 'justify-start'"
                             >
-                                <div
-                                    class="px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm"
-                                    :class="msg.sender_id === authStore.user?.ProfileID
-                                        ? 'bg-[#3B5BFA] text-white rounded-br-sm shadow-blue-300/30 shadow-md'
-                                        : 'bg-white text-slate-800 rounded-bl-sm border border-slate-100'"
+                                <img
+                                    v-if="msg.sender_id !== authStore.user?.ProfileID"
+                                    :src="msg.sender_avatar || activeChat.avatar"
+                                    class="w-7 h-7 rounded-full object-cover shrink-0 shadow"
+                                />
+
+                                <div class="flex flex-col max-w-[85%] sm:max-w-[75%] lg:max-w-[65%]"
+                                    :class="msg.sender_id === authStore.user?.ProfileID ? 'items-end' : 'items-start'"
                                 >
-                                    {{ msg.content }}
+                                    <div
+                                        class="px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm transition-opacity duration-300"
+                                        :class="[
+                                            msg.sender_id === authStore.user?.ProfileID
+                                                ? 'bg-[#3B5BFA] text-white rounded-br-sm shadow-blue-300/30 shadow-md'
+                                                : 'bg-white text-slate-800 rounded-bl-sm border border-slate-100',
+                                            String(msg._id).startsWith('temp_') ? 'opacity-60' : 'opacity-100'
+                                        ]"
+                                    >
+                                        {{ msg.content }}
+                                    </div>
+                                    <span
+                                        v-if="msg.sender_id === authStore.user?.ProfileID && index === messageStore.chatHistory.length - 1"
+                                        class="text-[10px] text-slate-400 mt-1 px-1"
+                                    >
+                                        {{ msg.is_read ? '✓✓ Đã xem' : '✓ Đã gửi' }}
+                                    </span>
                                 </div>
-                                <span
-                                    v-if="msg.sender_id === authStore.user?.ProfileID && index === messageStore.chatHistory.length - 1"
-                                    class="text-[10px] text-slate-400 mt-1 px-1"
-                                >
-                                    {{ msg.is_read ? '✓✓ Đã xem' : '✓ Đã gửi' }}
-                                </span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Input -->
                     <div class="px-5 py-3.5 bg-white border-t border-slate-100 shrink-0">
                         <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 rounded-2xl px-3 py-2 transition-all">
                             <button class="p-1 text-slate-400 hover:text-[#3B5BFA] transition-colors shrink-0">
@@ -246,6 +261,7 @@ const backToList = () => {
                                 @keyup.enter="handleSend"
                                 placeholder="Nhập tin nhắn..."
                                 class="flex-1 bg-transparent text-sm text-slate-700 placeholder-slate-400 outline-none"
+                                :disabled="messageStore.loading"
                             />
 
                             <button class="p-1 text-slate-400 hover:text-[#3B5BFA] transition-colors shrink-0">
@@ -254,9 +270,9 @@ const backToList = () => {
 
                             <button
                                 @click="handleSend"
-                                :disabled="!newMessage.trim()"
+                                :disabled="!newMessage.trim() || messageStore.loading"
                                 class="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0"
-                                :class="newMessage.trim()
+                                :class="newMessage.trim() && !messageStore.loading
                                     ? 'bg-[#3B5BFA] text-white hover:bg-blue-700 shadow-md shadow-blue-400/30 active:scale-95'
                                     : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
                             >

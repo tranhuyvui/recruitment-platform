@@ -185,7 +185,6 @@ class AuthController extends Controller
             // $userId = auth()->userId;
             
             $userId = $request->user()->UserID;
-            echo "UserID from token: {$request->user()}";
             if (!$userId) {
                 return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
             }
@@ -205,7 +204,6 @@ class AuthController extends Controller
                 'data' => $profileData
             ], 200);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Error getting profile: " . $e->getMessage());
 
             return response()->json([
                 'success' => false,
