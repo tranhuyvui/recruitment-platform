@@ -100,12 +100,12 @@ onMounted(async () => {
 </script>
 
 <template>
-    <Notify
+    <!-- <Notify
         v-if="showNotify"
         :message="messageNotify"
         :isSuccess="isSuccessNotify"
         @close="showNotify = false"
-    />
+    /> -->
     
     <div class="lg:hidden flex items-center justify-between bg-[#243093] text-white p-4 w-full sticky top-0 z-40 shadow-md">
         <div class="flex items-center gap-3">

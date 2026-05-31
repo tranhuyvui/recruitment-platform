@@ -51,6 +51,7 @@ export const useResumeStore = defineStore('resume', () => {
         } catch (err: any) {
             error.value = true;
             message.value = err.response?.data?.message || 'Lỗi khi tạo CV rồi sếp ơi';
+            console.error("Lỗi tạo CV:", err.response?.data);
             return null;
         } finally {
             loading.value = false;

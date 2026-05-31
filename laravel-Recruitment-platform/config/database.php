@@ -65,7 +65,7 @@ return [
         ],
         'mongodb' => [
             'driver'   => 'mongodb',
-            'dsn'      => env('MONGO_URI'),
+            'dsn'      => env('MONGO_URL'),
             'database' => env('MONGO_DATABASE'),
         ],
         'mariadb' => [
