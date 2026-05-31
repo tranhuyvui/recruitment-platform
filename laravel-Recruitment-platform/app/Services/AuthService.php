@@ -35,11 +35,11 @@ class AuthService
         $refreshToken = Str::random(64); 
 
         Redis::setex("refreshToken:{$refreshToken}", 7 * 24 * 60 * 60, $user->UserID);    
-
         return [
             'accessToken' => $accessToken,
             'refreshToken' => $refreshToken,
-            'role' => $user->Role
+            'role' => $user->Role,
+            'userId' => $user->UserID
         ];
     }
     public function requestOtp(string $email): array

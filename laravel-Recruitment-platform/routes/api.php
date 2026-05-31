@@ -18,6 +18,7 @@ require __DIR__.'/jobApplication.php';
 require __DIR__.'/savedJob.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/message.php';
+require __DIR__.'/job.php';
 require __DIR__ . '/candidate.php';
 
 require __DIR__ . '/skill.php';
