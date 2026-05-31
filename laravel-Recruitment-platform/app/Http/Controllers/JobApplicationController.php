@@ -192,14 +192,17 @@ class JobApplicationController extends Controller
              // Chạy AI sau khi response đã trả về cho người dùng
             dispatch(function () use ($applicationID, $jobID, $resumeID) {
                 try {
+                    //log xem nó vào đây không
+
+
                     app(\App\Services\JobApplicationService::class)->analyzeApplicationWithAI(
                         $applicationID,
                         $jobID,
                         $resumeID
                     );
                 } catch (\Throwable $aiError) {
-
-                    // Bỏ qua lỗi AI
+                    // Ghi log lỗi AI để kiểm tra sau
+                    // echo "Lỗi AI khi phân tích đơn ứng tuyển ID {$applicationID}: " . $aiError->getMessage();
                 }
             })->afterResponse();
 

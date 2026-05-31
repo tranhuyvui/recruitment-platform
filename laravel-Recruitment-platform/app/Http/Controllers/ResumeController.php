@@ -8,22 +8,23 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Requests\ResumeRequest;
+use App\Services\AiService;
 use App\Services\SearchAiService;
 
 class ResumeController extends Controller
 {
     protected ResumeService $resumeService;
     protected CloudinaryService $cloudinaryService; 
-    protected SearchAiService $searchAiService;
+    protected AiService $AiService;
 
     public function __construct(
         ResumeService $resumeService,
         CloudinaryService $cloudinaryService,
-        SearchAiService $searchAiService
+        AiService $AiService
     ) {
         $this->resumeService = $resumeService;
         $this->cloudinaryService = $cloudinaryService;
-        $this->searchAiService = $searchAiService;
+        $this->AiService = $AiService;
 
     }
 
@@ -68,18 +69,22 @@ class ResumeController extends Controller
                 $resumeData,
                 $candidateProfile
             );
-            // try {
-            //     $resumeDetail = $this->resumeService->getResumeDetail(
-            //         $result['resumeId'],
-            //         $candidateId
-            //     );
+            dispatch(function () use ($result, $candidateId) {
+                try {
+                    $resumeService = app(\App\Services\ResumeService::class);
+                    $aiService = app(\App\Services\AiService::class);
             
-            //     if ($resumeDetail) {
-            //         $this->searchAiService->recommendJobsByAI($resumeDetail, $candidateId);
-            //     }
-            // } catch (\Throwable $recommendError) {
-            //     // Bỏ qua lỗi gợi ý job để không làm lỗi tạo CV
-            // }
+                    $resumeDetail = $resumeService->getResumeDetailByResumeID(
+                        (int) $result['resumeId']
+                    );
+            
+                    if ($resumeDetail) {
+                        $aiService->recommendJobsByAI($resumeDetail, $candidateId);
+                    }
+                } catch (\Throwable $recommendError) {
+                    // Bỏ qua lỗi gợi ý job để không làm lỗi tạo CV
+                }
+            })->afterResponse();
             
             Redis::connection()->del("resumes:list:{$candidateId}");
             Redis::connection()->del('all_skills');
@@ -258,18 +263,23 @@ class ResumeController extends Controller
             if (!$result) {
                 throw new \Exception('Không tìm thấy CV này hoặc bạn không có quyền chỉnh sửa!', 404);
             }
-            // try {
-            //     $resumeDetail = $this->resumeService->getResumeDetail(
-            //         $result['resumeId'],
-            //         $candidateId
-            //     );
+            dispatch(function () use ($result, $candidateId) {
+                try {
+                    $resumeService = app(\App\Services\ResumeService::class);
+                    $aiService = app(\App\Services\AiService::class);
             
-            //     if ($resumeDetail) {
-            //         $this->searchAiService->recommendJobsByAI($resumeDetail, $candidateId);
-            //     }
-            // } catch (\Throwable $recommendError) {
-            //     // Bỏ qua lỗi gợi ý job để không làm lỗi tạo CV
-            // }
+                    $resumeDetail = $resumeService->getResumeDetailByResumeID(
+                        (int) $result['resumeId']
+                    );
+            
+                    if ($resumeDetail) {
+                        $aiService->recommendJobsByAI($resumeDetail, $candidateId);
+                    }
+                } catch (\Throwable $recommendError) {
+                    // Bỏ qua lỗi gợi ý job để không làm lỗi tạo CV
+                }
+            })->afterResponse();
+            
             Redis::connection()->del("resumes:list:{$candidateId}");
             Redis::connection()->del('all_skills');
     

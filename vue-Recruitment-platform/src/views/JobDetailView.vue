@@ -166,16 +166,16 @@ const handleApply = async (ResumeID: number) => {
                     <h2 class="text-xl font-bold text-[#3b49df]">Chi tiết tin tuyển dụng</h2>
                 </div>
                 
-                <div class="flex flex-col gap-3 mb-8">
+                <div v-if="job.tags" class="flex flex-col gap-3 mb-8">
                     <div class="flex items-start md:items-center gap-4 text-sm">
                         <span class="font-medium w-28 text-gray-800">Kinh nghiệm:</span>
-                        <span class="bg-gray-100 px-3 py-1.5 rounded-full text-gray-700">{{ job.Tags[0] }}</span>
+                        <span class="bg-gray-100 px-3 py-1.5 rounded-full text-gray-700">{{ job.tags[0] }}</span>
                     </div>
                     
                     <div class="flex items-start md:items-center gap-4 text-sm">
                         <span class="font-medium w-28 text-gray-800">Quyền lợi:</span>
                         <div class="flex flex-wrap gap-2">
-                            <span v-for="benefit in job.Benefits" :key="benefit" class="bg-gray-100 px-3 py-1.5 rounded-full text-gray-700">
+                            <span v-for="benefit in job.benefits" :key="benefit" class="bg-gray-100 px-3 py-1.5 rounded-full text-gray-700">
                                 {{ benefit }}
                             </span>
                         </div>
@@ -184,7 +184,7 @@ const handleApply = async (ResumeID: number) => {
                     <div class="flex items-start md:items-center gap-4 text-sm">
                         <span class="font-medium w-28 text-gray-800">Chuyên môn:</span>
                         <div class="flex flex-wrap gap-2">
-                            <span v-for="tag in job.Tags.slice(1)" :key="tag" class="bg-gray-100 px-3 py-1.5 rounded-full text-gray-700">
+                            <span v-for="tag in job.tags.slice(1)" :key="tag" class="bg-gray-100 px-3 py-1.5 rounded-full text-gray-700">
                                 {{ tag }}
                             </span>
                         </div>
@@ -194,21 +194,21 @@ const handleApply = async (ResumeID: number) => {
                 <div class="mb-6">
                     <h3 class="text-lg font-bold text-[#3b49df] mb-3">Mô tả công việc</h3>
                     <ul class="list-disc pl-5 space-y-1.5 text-[14.5px] text-gray-800 leading-relaxed">
-                        <li v-for="(line, idx) in formatTextToList(job.Description)" :key="idx">{{ line }}</li>
+                        <li v-for="(line, idx) in formatTextToList(job.description)" :key="idx">{{ line }}</li>
                     </ul>
                 </div>
                 
                 <div class="mb-6">
                     <h3 class="text-lg font-bold text-[#3b49df] mb-3">Yêu cầu ứng viên</h3>
                     <ul class="list-disc pl-5 space-y-1.5 text-[14.5px] text-gray-800 leading-relaxed">
-                        <li v-for="(line, idx) in formatTextToList(job.Requirements)" :key="idx">{{ line }}</li>
+                        <li v-for="(line, idx) in formatTextToList(job.requirements)" :key="idx">{{ line }}</li>
                     </ul>
                 </div>
                 
                 <div class="mb-6">
                     <h3 class="text-lg font-bold text-[#3b49df] mb-3">Thời gian làm việc</h3>
                     <ul class="list-disc pl-5 space-y-1.5 text-[14.5px] text-gray-800 leading-relaxed">
-                        <li v-for="(line, idx) in formatTextToList(job.WorkingSchedule)" :key="idx">{{ line }}</li>
+                        <li v-for="(line, idx) in formatTextToList(job.workingSchedule)" :key="idx">{{ line }}</li>
                     </ul>
                 </div>
                 
