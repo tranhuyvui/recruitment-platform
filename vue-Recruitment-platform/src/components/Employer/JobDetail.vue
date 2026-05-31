@@ -149,7 +149,7 @@ const getStatusBadgeClass = (status: string) => {
                                 </div>
                                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:col-span-2">
                                     <div class="text-xs text-slate-500 font-bold uppercase mb-1">Thời gian làm việc</div>
-                                    <div class="font-bold text-slate-800">{{ job.WorkingSchedule || 'Theo quy định công ty' }}</div>
+                                    <div class="font-bold text-slate-800">{{ job.workingSchedule || 'Theo quy định công ty' }}</div>
                                 </div>
                             </div>
 
@@ -159,7 +159,7 @@ const getStatusBadgeClass = (status: string) => {
                                         <i class="fas fa-align-left text-blue-600"></i> Mô tả công việc
                                     </h3>
                                     <div class="text-slate-700 whitespace-pre-line leading-relaxed bg-slate-50 p-4 rounded-xl">
-                                        {{ job.Description }}
+                                        {{ job.description }}
                                     </div>
                                 </div>
 
@@ -168,7 +168,7 @@ const getStatusBadgeClass = (status: string) => {
                                         <i class="fas fa-clipboard-check text-blue-600"></i> Yêu cầu ứng viên
                                     </h3>
                                     <div class="text-slate-700 whitespace-pre-line leading-relaxed bg-slate-50 p-4 rounded-xl">
-                                        {{ job.Requirements }}
+                                        {{ job.requirements }}
                                     </div>
                                 </div>
                             </div>
@@ -179,7 +179,7 @@ const getStatusBadgeClass = (status: string) => {
                                         <i class="fas fa-gift text-blue-600"></i> Quyền lợi
                                     </h3>
                                     <ul class="space-y-2">
-                                        <li v-for="(benefit, index) in job.Benefits" :key="index" class="flex items-start gap-2 text-slate-700">
+                                        <li v-for="(benefit, index) in job.benefits" :key="index" class="flex items-start gap-2 text-slate-700">
                                             <i class="fas fa-check-circle text-green-500 mt-1"></i>
                                             <span>{{ benefit }}</span>
                                         </li>
@@ -191,19 +191,19 @@ const getStatusBadgeClass = (status: string) => {
                                         <i class="fas fa-tags text-blue-600"></i> Kỹ năng / Tags
                                     </h3>
                                     <div class="flex flex-wrap gap-2">
-                                        <span v-for="(tag, index) in job.Tags" :key="index" class="px-3 py-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-sm font-medium text-slate-700">
+                                        <span v-for="(tag, index) in job.tags" :key="index" class="px-3 py-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-sm font-medium text-slate-700">
                                             {{ tag }}
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div v-if="job.InterviewProcess && job.InterviewProcess.length > 0">
+                            <div v-if="job.interviewProcess && job.interviewProcess.length > 0">
                                 <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                                     <i class="fas fa-comments text-blue-600"></i> Quy trình phỏng vấn
                                 </h3>
                                 <div class="space-y-4">
-                                    <div v-for="round in job.InterviewProcess" :key="round.roundOrder" class="flex gap-4 p-4 border border-slate-200 rounded-xl bg-white shadow-sm">
+                                    <div v-for="round in job.interviewProcess" :key="round.roundOrder" class="flex gap-4 p-4 border border-slate-200 rounded-xl bg-white shadow-sm">
                                         <div class="w-10 h-10 shrink-0 bg-blue-100 text-blue-700 font-bold rounded-full flex items-center justify-center">
                                             {{ round.roundOrder }}
                                         </div>

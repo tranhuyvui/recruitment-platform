@@ -5,6 +5,8 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 
 use Exception;
 
@@ -236,5 +238,114 @@ class AiService
 
             return $jobs;
         }
+    }
+    private function saveJobRecommendations(int $candidateId, array $matches): void
+    {
+        $validMatches = collect($matches)
+            ->filter(function ($item) {
+                $jobId = $item['metadata']['jobId'] ?? null;
+
+                return $jobId !== null && is_numeric($jobId);
+            })
+            ->values();
+
+        foreach ($validMatches as $item) {
+            DB::table('JobRecommendations')->updateOrInsert(
+                [
+                    'CandidateID' => $candidateId,
+                    'JobID' => (int) $item['metadata']['jobId'],
+                ],
+                [
+                    'Score' => $item['score'] ?? 0,
+                    'RecommendedAt' => now(),
+                ]
+            );
+        }
+    }
+    public function recommendJobsByAI(array $resume, int $candidateId): void
+    {
+        $resumeText = $this->buildResumeText($resume);
+
+        $resumeVector = $this->generateEmbedding($resumeText);
+
+        $matches = $this->queryVector($resumeVector, 10, [
+            'type' => ['$eq' => 'job']
+        ]);
+
+        $this->saveJobRecommendations($candidateId, $matches);
+    }
+    private function buildResumeText(array $resume): string
+    {
+        $skills = [];
+
+        if (!empty($resume['skills']) && is_array($resume['skills'])) {
+            $skills = collect($resume['skills'])
+                ->map(function ($skill) {
+                    if (is_array($skill)) {
+                        return strtolower($skill['skillName'] ?? '');
+                    }
+
+                    return strtolower((string) $skill);
+                })
+                ->filter()
+                ->toArray();
+        }
+
+        $technologies = [];
+
+        if (!empty($resume['projects']) && is_array($resume['projects'])) {
+            foreach ($resume['projects'] as $project) {
+                if (!is_array($project)) {
+                    continue;
+                }
+
+                $projectTechnologies = $project['technologies'] ?? [];
+
+                if (is_array($projectTechnologies)) {
+                    foreach ($projectTechnologies as $tech) {
+                        $technologies[] = strtolower((string) $tech);
+                    }
+                }
+            }
+        }
+
+        $experienceDesc = '';
+
+        if (!empty($resume['experience']) && is_array($resume['experience'])) {
+            $experienceDesc = collect($resume['experience'])
+                ->map(function ($exp) {
+                    if (!is_array($exp)) {
+                        return '';
+                    }
+
+                    return ($exp['position'] ?? '') . ' ' . ($exp['description'] ?? '');
+                })
+                ->filter()
+                ->implode(' ');
+        }
+
+        $totalExp = !empty($resume['experience']) && is_array($resume['experience'])
+            ? count($resume['experience'])
+            : 0;
+
+        $allSkills = array_merge($skills, $technologies);
+
+        $text = "
+            " . ($resume['title'] ?? '') . "
+
+            Type: full-time
+
+            Experience: {$totalExp} years
+
+            Skills: " . implode(', ', $allSkills) . "
+
+            Description:
+            " . ($resume['summary'] ?? '') . " {$experienceDesc}
+
+            Requirements:
+            " . implode(', ', $skills) . "
+        ";
+
+        return trim(preg_replace('/\s+/', ' ', $text));
     }
 }

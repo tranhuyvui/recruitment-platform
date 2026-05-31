@@ -16,6 +16,7 @@ const messageNotify = ref<string>('');
 const showNotify = ref<boolean>(false);
 const isSuccessNotify = ref<boolean>(false);
 const durationNotify = ref<number>(2000);
+const loading = ref<boolean>(false);
 
 const role = computed(() => route.query.role as string || 'Candidate');
 
@@ -44,7 +45,9 @@ const handleSubmit = async () => {
 
     if(!validateForm()) return;
     message.value = '';
+    loading.value = true;
     await useAuth.loginStore(email.value, password.value);
+    loading.value = false;
     if (useAuth.error) {
         showNotify.value = true;
         messageNotify.value = 'Đăng nhập thất bại!';
@@ -126,7 +129,7 @@ onMounted(() => {
                     </div>
                 </div>
                 <div class="mt-8 flex flex-col items-center gap-4">
-                    <button @click="handleSubmit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-md transition shadow-md">{{useAuth.loading ? 'Đang đăng nhập...' : 'Đăng nhập'}}</button>
+                    <button @click="handleSubmit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-md transition shadow-md">{{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}}</button>
                     <button class="text-blue-500 text-sm hover:underline">Quên mật khẩu</button>
                 </div>
             </div>

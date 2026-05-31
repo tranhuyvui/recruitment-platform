@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useJobStore } from '../../stores/job';
-import type { IJobDetail } from '../../types/job';
+import type { IJobDetailEdit, IJobDetail } from '../../types/job';
 
 const props = defineProps<{
     isOpen: boolean;
@@ -15,7 +15,7 @@ const useJob = useJobStore();
 const isLoading = ref<boolean>(false);
 const error = ref<string>('');
 
-const formData = ref<IJobDetail>({
+const formData = ref<IJobDetailEdit>({
     JobID: 0,
     EmployerID: 0, 
     Title: '',
@@ -124,35 +124,35 @@ const buildUpdatePayload = () => {
         payload.quantity = formData.value.Quantity;
     }
 
-    if (formData.value.Description !== originalData.value?.Description) {
+    if (formData.value.Description !== originalData.value?.description) {
         payload.description = formData.value.Description;
     }
 
-    if (formData.value.WorkingSchedule !== originalData.value?.WorkingSchedule) {
+    if (formData.value.WorkingSchedule !== originalData.value?.workingSchedule) {
         payload.workingSchedule = formData.value.WorkingSchedule;
     }
 
-    if (formData.value.Requirements !== originalData.value?.Requirements) {
+    if (formData.value.Requirements !== originalData.value?.requirements) {
         payload.requirements = formData.value.Requirements;
     }
 
     if (
         JSON.stringify(formData.value.Benefits) !==
-        JSON.stringify(originalData.value?.Benefits)
+        JSON.stringify(originalData.value?.benefits)
     ) {
         payload.benefits = formData.value.Benefits;
     }
 
     if (
         JSON.stringify(formData.value.Tags) !==
-        JSON.stringify(originalData.value?.Tags)
+        JSON.stringify(originalData.value?.tags)
     ) {
         payload.tags = formData.value.Tags;
     }
 
     if (
         JSON.stringify(formData.value.InterviewProcess) !==
-        JSON.stringify(originalData.value?.InterviewProcess)
+        JSON.stringify(originalData.value?.interviewProcess)
     ) {
         payload.interviewProcess = formData.value.InterviewProcess;
     }

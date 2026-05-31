@@ -8,6 +8,8 @@ class CandidateDetail extends Model
     protected $connection = 'mongodb'; 
     
     protected $collection = 'candidate_details'; 
+    protected $table = 'candidatedetails';
+
 
     protected $fillable = [
         'candidateId',

@@ -179,34 +179,34 @@ const statusConfig: Record<string, { label: string; cls: string; dot: string; ic
                             <h4 class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-600 mb-2.5">
                                 <i class="fas fa-align-left text-[#4c5bd4]"></i> Mô tả công việc
                             </h4>
-                            <p class="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">{{ detail.Description }}</p>
+                            <p class="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">{{ detail.description }}</p>
                         </section>
 
-                        <section v-if="detail.WorkingSchedule">
+                        <section v-if="detail.workingSchedule">
                             <h4 class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-600 mb-2.5">
                                 <i class="fas fa-clock text-[#4c5bd4]"></i> Lịch làm việc
                             </h4>
-                            <p class="text-[13px] text-slate-600">{{ detail.WorkingSchedule }}</p>
+                            <p class="text-[13px] text-slate-600">{{ detail.workingSchedule }}</p>
                         </section>
 
-                        <section v-if="detail.Benefits?.length">
+                        <section v-if="detail.benefits?.length">
                             <h4 class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-600 mb-2.5">
                                 <i class="fas fa-gift text-[#4c5bd4]"></i> Quyền lợi
                             </h4>
                             <ul class="space-y-2">
-                                <li v-for="(b, i) in detail.Benefits" :key="i" class="flex items-start gap-2 text-[13px] text-slate-600">
+                                <li v-for="(b, i) in detail.benefits" :key="i" class="flex items-start gap-2 text-[13px] text-slate-600">
                                     <i class="fas fa-check text-emerald-500 mt-0.5 text-[10px] shrink-0"></i>
                                     <span>{{ b }}</span>
                                 </li>
                             </ul>
                         </section>
 
-                        <section v-if="detail.Tags?.length">
+                        <section v-if="detail.tags?.length">
                             <h4 class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-600 mb-2.5">
                                 <i class="fas fa-tags text-[#4c5bd4]"></i> Tags
                             </h4>
                             <div class="flex flex-wrap gap-1.5">
-                                <span v-for="tag in detail.Tags" :key="tag"
+                                <span v-for="tag in detail.tags" :key="tag"
                                       class="bg-[#eef0fd] text-[#4c5bd4] text-[11px] font-bold px-2.5 py-1 rounded-lg">
                                     {{ tag }}
                                 </span>
@@ -218,17 +218,17 @@ const statusConfig: Record<string, { label: string; cls: string; dot: string; ic
                         <h4 class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-600 mb-2.5">
                             <i class="fas fa-list-check text-[#4c5bd4]"></i> Yêu cầu ứng viên
                         </h4>
-                        <p class="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">{{ detail.Requirements }}</p>
+                        <p class="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">{{ detail.requirements }}</p>
                     </div>
 
                     <div v-if="activeTab === 'process'" class="p-6">
-                        <div v-if="detail.InterviewProcess?.length">
+                        <div v-if="detail.interviewProcess?.length">
                             <h4 class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-600 mb-2.5">
                                 <i class="fas fa-tasks text-[#4c5bd4]"></i> Quy trình phỏng vấn
                             </h4>
                             <div class="relative pl-1 space-y-0">
                                 <div
-                                    v-for="(round, idx) in detail.InterviewProcess"
+                                    v-for="(round, idx) in detail.interviewProcess"
                                     :key="round.roundOrder"
                                     class="relative flex gap-4 pb-6 last:pb-0"
                                 >
@@ -236,7 +236,7 @@ const statusConfig: Record<string, { label: string; cls: string; dot: string; ic
                                         <div class="w-8 h-8 rounded-full bg-[#4c5bd4] flex items-center justify-center text-white text-[11px] font-black shrink-0 z-10 shadow-md">
                                             {{ round.roundOrder }}
                                         </div>
-                                        <div v-if="idx < (detail.InterviewProcess?.length ?? 0) - 1" class="w-0.5 flex-1 bg-slate-100 mt-1"></div>
+                                        <div v-if="idx < (detail.interviewProcess?.length ?? 0) - 1" class="w-0.5 flex-1 bg-slate-100 mt-1"></div>
                                     </div>
                                     <div class="flex-1 pt-1 pb-2">
                                         <p class="font-bold text-slate-800 text-[13px]">{{ round.roundTitle }}</p>

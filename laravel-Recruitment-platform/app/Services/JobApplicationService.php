@@ -9,6 +9,10 @@ use App\Services\ResumeService;
 class JobApplicationService
 {
     protected ResumeService $resumeService;
+    public function __construct(ResumeService $resumeService)
+    {
+        $this->resumeService = $resumeService;
+    }
     public function getApplicationByJobId(int $jobID, int $page, int $limit): array
     {
         $offset = ($page - 1) * $limit;
@@ -63,7 +67,7 @@ class JobApplicationService
         if (!$app) {
             return null;
         }
-
+        // echo resume id
         return [
             'ApplicationID' => $app->ApplicationID,
             'FullName' => $app->FullName,

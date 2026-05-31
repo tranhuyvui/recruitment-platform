@@ -12,7 +12,7 @@ export interface IJob {
     JobType?: string;
     ApplicationCount?: number;
 }
-export interface IJobDetail {
+export interface IJobDetailEdit {
     JobID: number;
     EmployerID: number;
     Title: string;
@@ -32,6 +32,27 @@ export interface IJobDetail {
     Tags: string[];
     RawTextForAi: string;
     InterviewProcess?: IInterviewRound[];
+}
+export interface IJobDetail {
+    JobID: number;
+    EmployerID: number;
+    Title: string;
+    Location: string;
+    CreatedAt: Date;
+    CompanyName: string;
+    CompanyLogo: string;
+    Status: string;
+    SalaryMin: number;
+    SalaryMax: number;
+    JobType: string;
+    Quantity: number;
+    description: string;
+    workingSchedule?: string;
+    requirements: string;
+    benefits: string[];
+    tags: string[];
+    rawTextForAi: string;
+    interviewProcess?: IInterviewRound[];
 }
 export interface IJobPayload {
     EmployerID: number;

@@ -50,9 +50,9 @@ const filteredApplications = computed(() => {
 
 const openCV = (app: any) => {
     selectedApp.value = app;
-    if (app.Status === 'Pending') {
-        updateStatus(app.ApplicationID, 'Reviewed');
-    }
+    // if (app.Status === 'Pending') {
+    //     updateStatus(app.ApplicationID, 'Reviewed');
+    // }
 };
 
 const updateStatus = async (appId: number, newStatus: string) => {

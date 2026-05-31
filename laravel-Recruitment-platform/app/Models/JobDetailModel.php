@@ -8,6 +8,6 @@ class JobDetailModel extends MongoModel
 {
     protected $connection = 'mongodb';
     protected $collection = 'job_details';
-    protected $table = 'job_details';
+    protected $table = 'jobdetails';
     protected $guarded = [];
 }
