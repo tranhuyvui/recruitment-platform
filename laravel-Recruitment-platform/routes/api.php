@@ -22,6 +22,6 @@ require __DIR__.'/job.php';
 require __DIR__ . '/candidate.php';
 
 require __DIR__ . '/skill.php';
-require __DIR__ . '/jobskill.php';
+require __DIR__ . '/jobSkill.php';
 
 require __DIR__ . '/resume.php';
