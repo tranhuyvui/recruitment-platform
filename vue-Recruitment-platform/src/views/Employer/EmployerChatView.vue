@@ -122,7 +122,8 @@ const backToList = () => {
                                     class="text-sm font-bold truncate pr-1"
                                     :class="activeChat?.userId === chat.userId ? 'text-[#3B5BFA]' : 'text-slate-800'"
                                 >{{ chat.name }}</span>
-                                <span class="text-[10px] text-slate-400 shrink-0">{{ timeAgo(chat.timestamp) }}</span>
+                                <span v-if="chat.timestamp" class="text-[10px] text-slate-400 shrink-0">{{ timeAgo(chat.timestamp)}}</span>
+                                <span v-else class="text-[10px] text-slate-400 shrink-0">{{ '2-2-2026'}}</span>
                             </div>
                             <p
                                 class="text-xs truncate"

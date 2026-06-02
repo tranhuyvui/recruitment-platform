@@ -48,7 +48,8 @@ class MessageService
             return [
                 'userId' => $c['_id'],
                 'latestMessage' => $c['latestMessage'],
-                'timestamp' => $c['timestamp']->toDateTime()->format('c'),
+                // 'timestamp' => $c['timestamp']->toDateTime()->format('c'),
+                'timestamp' => isset($c['timestamp']) ? $c['timestamp']?->toDateTime()?->format('c') : null,
                 'lastSenderId' => $c['lastSenderId'],
                 'isRead' => $c['isRead'],
                 'name' => $c['lastSenderId'] === $myId ? $c['receiver_name'] : $c['sender_name'],

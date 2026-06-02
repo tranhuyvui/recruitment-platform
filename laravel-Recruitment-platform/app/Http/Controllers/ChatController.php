@@ -54,6 +54,7 @@ class ChatController extends Controller
                 'data' => $messageData
             ], 200);
         } catch (Exception $e) {
+            echo "Error in sendMessage: " . $e->getMessage();
             return response()->json(['success' => false, 'message' => 'Lỗi server, không thể gửi tin nhắn'], 500);
         }
     }
