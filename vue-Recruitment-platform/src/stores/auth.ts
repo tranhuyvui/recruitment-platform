@@ -120,12 +120,19 @@ export const useAuthStore = defineStore('auth', () => {
             user.value = data.data;
             const token = localStorage.getItem('accessToken');
             if (token) {
+                if (!window.Echo) {
+                    setupEcho(token);
+                }
                 setupEcho(token);
                 const myUserId = user.value?.ProfileID;
                 const messageStore = useMessageStore();
                 if (myUserId) {
-                    console.log("Khởi tạo Echo listeners với user ID:", myUserId);
-                    messageStore.initEchoListeners(myUserId);
+                    // console.log("Khởi tạo Echo listeners với user ID:", myUserId);
+                    // messageStore.initEchoListeners(myUserId);
+                    if (!messageStore.isEchoInitialized) {
+                        console.log("Khởi tạo Echo listeners với user ID:", myUserId);
+                        messageStore.initEchoListeners(myUserId);
+                    }
                 }
             }
         } catch (err: any) {
