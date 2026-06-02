@@ -34,6 +34,20 @@ class ChatController extends Controller
             $sender = $this->authService->getProfile($user->UserID);
             $receiver = $this->authService->getProfile($data['receiver_id']);
 
+            if (!$sender) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy thông tin người gửi'
+                ], 404);
+            }
+            
+            if (!$receiver) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy thông tin người nhận'
+                ], 404);
+            }
+            
             $messageData = MessageModel::create([
                 'sender_id' => $user->UserID,
                 'receiver_id' => $data['receiver_id'],
