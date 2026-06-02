@@ -20,7 +20,7 @@ export const setupEcho = (token: string) => {
         forceTLS: false,
         disableStats: true,
         enabledTransports: ['ws', 'wss'],
-        authEndpoint: `http://127.0.0.1:8000/broadcasting/auth`,
+        authEndpoint: `https://recruitment-platform-production-462b.up.railway.app/broadcasting/auth`,
         auth: {
             headers: {
                 Authorization: `Bearer ${token}`
