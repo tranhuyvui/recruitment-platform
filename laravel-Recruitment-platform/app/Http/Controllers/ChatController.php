@@ -35,6 +35,7 @@ class ChatController extends Controller
             $receiver = $this->authService->getProfile($data['receiver_id']);
 
             if (!$sender) {
+                echo "Sender not found for UserID: " . $sender;
                 return response()->json([
                     'success' => false,
                     'message' => 'Không tìm thấy thông tin người gửi'
@@ -42,12 +43,13 @@ class ChatController extends Controller
             }
             
             if (!$receiver) {
+                echo "receiver not found for UserID: " . $receiver;
                 return response()->json([
                     'success' => false,
                     'message' => 'Không tìm thấy thông tin người nhận'
                 ], 404);
             }
-            
+
             $messageData = MessageModel::create([
                 'sender_id' => $user->UserID,
                 'receiver_id' => $data['receiver_id'],
@@ -69,6 +71,7 @@ class ChatController extends Controller
             ], 200);
         } catch (Exception $e) {
             echo "Error in sendMessage: " . $e->getMessage();
+            
             return response()->json(['success' => false, 'message' => 'Lỗi server, không thể gửi tin nhắn'], 500);
         }
     }
