@@ -12,6 +12,8 @@ export const useMessageStore = defineStore('message', () => {
     const loading = ref<boolean>(false);
     const error = ref<string>('');
 
+    const isEchoInitialized = ref(false);
+
     const fetchConversations = async () => {
         try {
             loading.value = true;
@@ -106,7 +108,7 @@ export const useMessageStore = defineStore('message', () => {
         }
     }
     const initEchoListeners = (myUserId: number) => {
-        if (!window.Echo) return;
+        if (!window.Echo || isEchoInitialized.value) return;
 
         // Dọn dẹp listener cũ (nếu có) để tránh nghe trùng lặp khi chuyển trang
         window.Echo.leave(`user.${myUserId}`);
@@ -129,6 +131,7 @@ export const useMessageStore = defineStore('message', () => {
                 });
                 fetchConversations();
             });
+        isEchoInitialized.value = true;
     };
 
     const sendMessage = async (receiverId: number, content: string) => {
@@ -186,6 +189,7 @@ export const useMessageStore = defineStore('message', () => {
         fetchUnreadCount,
         initEchoListeners,
         sendMessage,
-        markAsRead
+        markAsRead,
+        isEchoInitialized
     }
 });

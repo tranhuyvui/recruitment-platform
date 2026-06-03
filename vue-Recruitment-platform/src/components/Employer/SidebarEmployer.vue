@@ -4,8 +4,6 @@ import { useRouter, useRoute } from 'vue-router';
 import { useCompanyStore } from '../../stores/company';
 import { useAuthStore } from '../../stores/auth';
 
-import Notify from '../Notify.vue';
-
 const router = useRouter();
 const route = useRoute();
 const useCompany = useCompanyStore();

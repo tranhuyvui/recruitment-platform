@@ -47,7 +47,7 @@ export const forgotPassword = async (verifyToken: string, newPassword: string) =
 }
 
 export const getCurrentRole = async () => {
-    const response = await api.get('/users/role');
+    const response = await api.get('/users/current-role');
     return response.data;
 }
 export const updateStatus = async (userId: number, status: string) => {
