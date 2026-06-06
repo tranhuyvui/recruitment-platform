@@ -189,7 +189,7 @@ class JobService
         // ✅ Chạy sau khi response trả về, không block
         app()->terminating(function () use ($jobId, $data, $rawText) {
             try {
-                $aiService = app(AiService::class);
+                $aiService = app(AIService::class);
                 $aiService->processJobVector($jobId, $data, $data, $rawText);
             } catch (Exception $e) {
                 Log::error("[AI-ERROR] processJobVector Job ID {$jobId}: " . $e->getMessage());

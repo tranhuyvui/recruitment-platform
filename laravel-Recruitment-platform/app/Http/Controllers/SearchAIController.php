@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Services\AiService;
+use App\Services\AIService;
 use App\Services\JobService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 class SearchAIController extends Controller
 {
     public function __construct(
-        private AiService $aiService,
+        private AIService $aiService,
         private JobService $jobService
     ) {}
 

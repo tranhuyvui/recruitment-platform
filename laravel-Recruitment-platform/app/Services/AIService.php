@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 use Exception;
 
-class AiService
+class AIService
 {
     private string $geminiApiKey;
     private string $pineconeApiKey;

@@ -8,23 +8,23 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Requests\ResumeRequest;
-use App\Services\AiService;
+use App\Services\AIService;
 use App\Services\SearchAiService;
 
 class ResumeController extends Controller
 {
     protected ResumeService $resumeService;
     protected CloudinaryService $cloudinaryService; 
-    protected AiService $AiService;
+    protected AIService $AIService;
 
     public function __construct(
         ResumeService $resumeService,
         CloudinaryService $cloudinaryService,
-        AiService $AiService
+        AIService $AIService
     ) {
         $this->resumeService = $resumeService;
         $this->cloudinaryService = $cloudinaryService;
-        $this->AiService = $AiService;
+        $this->AIService = $AIService;
 
     }
 
@@ -72,7 +72,7 @@ class ResumeController extends Controller
             dispatch(function () use ($result, $candidateId) {
                 try {
                     $resumeService = app(\App\Services\ResumeService::class);
-                    $aiService = app(\App\Services\AiService::class);
+                    $aiService = app(\App\Services\AIService::class);
             
                     $resumeDetail = $resumeService->getResumeDetailByResumeID(
                         (int) $result['resumeId']
