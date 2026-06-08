@@ -354,6 +354,7 @@ class JobService
             ->limit(20)
             ->get()
             ->toArray();
+    
     }
     public function getJobForAdmin(): array
     {
@@ -478,7 +479,6 @@ class JobService
                 'c.LogoUrl as CompanyLogo'
             ])
             ->get();
-
         $mongoDetails = JobDetailModel::query()
             ->whereIn('mysqlJobID', $jobIds)
             ->get([

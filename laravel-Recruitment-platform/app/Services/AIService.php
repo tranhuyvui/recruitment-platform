@@ -126,7 +126,7 @@ class AIService
             'type' => ['$eq' => 'job']
         ]);
 
-        $minScore = 0.65;
+        $minScore = 0.73;
         return array_filter($matches, function ($match) use ($minScore) {
             $score   = $match['score'] ?? 0;
             $id      = $match['id'] ?? '';

@@ -32,26 +32,23 @@ class SearchAIController extends Controller
                 $this->aiService->searchJobsByAI($q),
                 $this->jobService->searchJobsByKeyword($q)
             ];
-
+            // echo json_encode($aiMatches);
             $allJobIds = collect($aiMatches)
-                ->pluck('jobId')
+                ->pluck("id")
                 ->merge(
                     collect($keywordResults)->pluck('JobID')
                 )
                 ->unique()
                 ->values();
-
             if ($allJobIds->isEmpty()) {
                 return response()->json([
                     'success' => true,
                     'data' => []
                 ]);
             }
-
             $fullJobs = $this->jobService->getJobsByIds(
                 $allJobIds->toArray()
             );
-
             $topJobsToRerank = collect($fullJobs)
                 ->take(15)
                 ->values()
